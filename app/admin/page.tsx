@@ -1,44 +1,100 @@
 import { adminDb } from "@/lib/firebaseAdmin";
 import AdminTabs from "./AdminTabs";
 
-async function getPatients() {
-  const snapshot = await adminDb
-    .collection("support_requests")
-    .orderBy("createdAt", "desc")
-    .get();
+type Patient = {
+  id: string;
+  name: string;
+  age: number;
+  location: string;
+  contact: string;
+  description: string;
+  ai_summary?: string | null;
+  urgency?: string | null;
+  category?: string | null;
+  selfUrgency?: string | null;
+  createdAt: string | null;
+};
 
-  return snapshot.docs.map((doc) => {
+type Volunteer = {
+  id: string;
+  name: string;
+  skills: string;
+  availability: string;
+  location: string;
+  contact: string;
+  createdAt: string | null;
+};
+
+/* ============================= */
+/* FETCH PATIENTS (SAFE VERSION) */
+/* ============================= */
+
+async function getPatients(): Promise<Patient[]> {
+  const snapshot = await adminDb.collection("support_requests").get();
+
+  const patients = snapshot.docs.map((doc) => {
     const data = doc.data();
+
     return {
       id: doc.id,
-      ...data,
+      name: data.name || "",
+      age: data.age || 0,
+      location: data.location || "",
+      contact: data.contact || "",
+      description: data.description || "",
+      ai_summary: data.ai_summary || null,
+      urgency: data.urgency || null,
+      category: data.category || null,
+      selfUrgency: data.selfUrgency || null,
       createdAt: data.createdAt?.toDate?.().toISOString() || null,
     };
   });
+
+  // Sort safely in Node (not Firestore)
+  return patients.sort((a, b) => {
+    if (!a.createdAt || !b.createdAt) return 0;
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
 }
 
-async function getVolunteers() {
-  const snapshot = await adminDb
-    .collection("volunteers")
-    .orderBy("createdAt", "desc")
-    .get();
+/* ============================= */
+/* FETCH VOLUNTEERS (SAFE VERSION) */
+/* ============================= */
 
-  return snapshot.docs.map((doc) => {
+async function getVolunteers(): Promise<Volunteer[]> {
+  const snapshot = await adminDb.collection("volunteers").get();
+
+  const volunteers = snapshot.docs.map((doc) => {
     const data = doc.data();
+
     return {
       id: doc.id,
-      ...data,
+      name: data.name || "",
+      skills: data.skills || "",
+      availability: data.availability || "",
+      location: data.location || "",
+      contact: data.contact || "",
       createdAt: data.createdAt?.toDate?.().toISOString() || null,
     };
   });
+
+  // Safe Node sorting
+  return volunteers.sort((a, b) => {
+    if (!a.createdAt || !b.createdAt) return 0;
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
 }
+
+/* ============================= */
+/* PAGE COMPONENT */
+/* ============================= */
 
 export default async function AdminPage() {
   const patients = await getPatients();
   const volunteers = await getVolunteers();
 
   const highUrgencyCount = patients.filter(
-    (r: any) => r.urgency === "HIGH"
+    (r) => r.urgency === "HIGH"
   ).length;
 
   return (
@@ -51,25 +107,19 @@ export default async function AdminPage() {
             Admin Dashboard
           </h1>
           <p className="text-gray-500 dark:text-gray-400 mt-2">
-            Monitor patient requests and volunteer registrations in real-time.
+            Monitor patient requests and volunteer registrations.
           </p>
         </div>
 
         {/* Stats */}
         <div className="grid md:grid-cols-3 gap-6 mb-14">
-          <StatCard
-            label="Total Requests"
-            value={patients.length}
-          />
+          <StatCard label="Total Requests" value={patients.length} />
           <StatCard
             label="High Urgency"
             value={highUrgencyCount}
             danger
           />
-          <StatCard
-            label="Volunteers"
-            value={volunteers.length}
-          />
+          <StatCard label="Volunteers" value={volunteers.length} />
         </div>
 
         {/* Tabs Section */}
@@ -79,7 +129,9 @@ export default async function AdminPage() {
   );
 }
 
-/* ---------- Small Components ---------- */
+/* ============================= */
+/* SMALL COMPONENT */
+/* ============================= */
 
 function StatCard({
   label,
@@ -91,15 +143,20 @@ function StatCard({
   danger?: boolean;
 }) {
   return (
-    <div className="bg-white dark:bg-slate-900 
-                    border border-gray-200 dark:border-slate-700
-                    rounded-2xl p-6 shadow-md">
+    <div
+      className="bg-white dark:bg-slate-900
+                 border border-gray-200 dark:border-slate-700
+                 rounded-2xl p-6 shadow-md"
+    >
       <p className="text-sm text-gray-500 dark:text-gray-400">
         {label}
       </p>
+
       <p
         className={`text-3xl font-bold mt-2 ${
-          danger ? "text-red-500" : "text-gray-900 dark:text-white"
+          danger
+            ? "text-red-500"
+            : "text-gray-900 dark:text-white"
         }`}
       >
         {value}
