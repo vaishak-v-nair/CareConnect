@@ -11,7 +11,7 @@ It allows patients to submit support requests, volunteers to register, and admin
 ## 🌍 Live Demo
 
 🔗 **Live Hosted App:**
-([Add your Vercel URL here](https://care-connect-3qrh8d7kh-speakance-vercel-projects.vercel.app))
+([Link](https://care-connect-3qrh8d7kh-speakance-vercel-projects.vercel.app))
 
 ---
 
