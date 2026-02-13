@@ -1,146 +1,142 @@
-## CareConnect
-AI-powered healthcare intake and volunteer coordination system built for NGOs.
+# 🏥 CareConnect
 
-CareConnect is a concept-level web application designed to demonstrate how structured data collection and AI-assisted triage can improve healthcare request handling efficiency.
+**AI-powered Healthcare Support Web App (Concept-Level Prototype)**
 
----
+CareConnect is a lightweight healthcare intake system designed for NGOs and community organizations.
 
-## Live Demo
-
-🔗 [https://YOUR-VERCEL-URL.vercel.app](https://your-vercel-url.vercel.app/)
-
-(Add after deployment)
+It allows patients to submit support requests, volunteers to register, and administrators to manage cases — enhanced with AI-based triage and summarization.
 
 ---
 
-## Overview
+## 🌍 Live Demo
 
-NGOs handling healthcare assistance frequently receive unstructured requests via calls or messages. Manual triage slows response time and increases the risk of missing urgent cases.
-
-CareConnect introduces:
-
-- Structured patient intake
-- AI-generated case summaries
-- Automated urgency classification
-- Volunteer registration management
-- Real-time admin dashboard
-
-The goal is clarity, usability, and intelligent prioritization — not feature overload.
+🔗 **Live Hosted App:**
+([Add your Vercel URL here](https://care-connect-3qrh8d7kh-speakance-vercel-projects.vercel.app))
 
 ---
 
-## Core Features
+## 🎯 Problem Statement
 
-### Patient Support Intake
+NGOs handling medical or emergency support often:
 
-- Structured validated form
-- Self-declared urgency
-- AI-generated summary
-- AI-based urgency prediction
-- Category tagging
-- Firestore persistence
+* Collect requests manually via WhatsApp / Google Forms
+* Struggle to prioritize urgent cases
+* Lack structured intake and triage systems
+* Have difficulty matching volunteers to needs
 
-### Volunteer Registration
+CareConnect solves this by:
 
-- Skills tracking
-- Availability tracking
-- Real-time database updates
-- Success feedback with animation
-
-### Admin Dashboard
-
-- Real-time Firestore listeners
-- High urgency counter
-- Tab-based view (Patients / Volunteers)
-- Dark mode support
-- Clean UI with subtle animations
+* Structuring intake
+* Automatically summarizing cases
+* Categorizing urgency using AI
+* Providing a simple admin dashboard
 
 ---
 
-## AI / Automation Concept
+## 🧠 AI / Automation Idea
 
-CareConnect integrates AI to:
+The app integrates AI to automatically:
 
-- Summarize medical descriptions
-- Predict urgency level (LOW / MEDIUM / HIGH)
-- Classify request category
+* Generate a short summary of the patient's description
+* Classify urgency (LOW / MEDIUM / HIGH)
+* Categorize medical need (General / Emergency / etc.)
 
-This reduces manual triage effort and enables faster response prioritization.
-
-AI integration is handled through:
-
-- OpenRouter API
-- Structured prompt engineering
-- Safe fallback handling
+This helps NGOs prioritize cases faster without manual review of every long description.
 
 ---
 
-## Tech Stack
+## 🛠 Tech Stack
 
-Frontend
+**Frontend**
 
-- Next.js (App Router)
-- TypeScript
-- Tailwind CSS v4
-- Framer Motion
+* Next.js (App Router)
+* React
+* Tailwind CSS v4
 
-Backend
+**Backend**
 
-- Next.js API Routes
-- Firebase Firestore
+* Next.js API Routes
+* Firebase Firestore
 
-AI
+**AI Integration**
 
-- OpenRouter
+* OpenRouter API (LLM-based summarization + triage logic)
 
-Deployment
+**Hosting**
 
-- Vercel
-
----
-
-## Firestore Collections
-
-### support_requests
-
-- name
-- age
-- location
-- contact
-- description
-- selfUrgency
-- ai_summary
-- urgency
-- category
-- createdAt
-
-### volunteers
-
-- name
-- skills
-- availability
-- location
-- contact
-- createdAt
+* Vercel
 
 ---
 
-## Local Setup
+## ✨ Features
 
-Clone repository:
+### 🩺 Patient Support Form
 
-```bash
-git clone https://github.com/YOUR_USERNAME/careconnect.git
-cd careconnect
+* Structured input fields
+* Self-reported urgency selection
+* Client-side validation
+* AI-based summary + urgency detection
+* Firestore storage
+
+### 🤝 Volunteer Registration
+
+* Skill tagging
+* Availability input
+* Firestore storage
+* Success animation + confetti
+
+### 📊 Admin Dashboard
+
+* View patient requests
+* View volunteer registrations
+* Urgency color indicators
+* Live Firestore updates
+* Dark mode support
+
+---
+
+## 🗂 Project Structure
+
+```
+app/
+ ├── page.tsx              → Landing page
+ ├── support/              → Patient form
+ ├── volunteer/            → Volunteer form
+ ├── admin/                → Admin dashboard
+ ├── api/
+ │    ├── support/route.ts
+ │    ├── volunteer/route.ts
+ │    └── ai/route.ts
+lib/
+ ├── firebase.ts
+ ├── firebaseAdmin.ts
+ ├── validators.ts
+ └── openrouter.ts
+components/
+ ├── BackgroundBlobs.tsx
+ ├── PageTransition.tsx
+ ├── SuccessAnimation.tsx
 ```
 
-Install dependencies:
+---
 
-```bash
+## 🔥 Firestore Collections
+
+* `support_requests`
+* `volunteers`
+
+---
+
+## 🚀 Local Setup
+
+1. Clone the repository
+2. Install dependencies
+
+```
 npm install
 ```
 
-Create `.env.local`:
+3. Create `.env.local`
 
 ```
 NEXT_PUBLIC_FIREBASE_API_KEY=
@@ -150,41 +146,53 @@ NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
 NEXT_PUBLIC_FIREBASE_APP_ID=
 
+FIREBASE_CLIENT_EMAIL=
+FIREBASE_PRIVATE_KEY=
+
 OPENROUTER_API_KEY=
 ```
 
-Run locally:
+4. Run locally
 
-```bash
+```
 npm run dev
 ```
 
-Production build:
+---
 
-```bash
-npm run build
-```
+## 📦 Deployment
+
+Deployed using **Vercel**
+
+Environment variables configured in:
+Vercel → Project Settings → Environment Variables
 
 ---
 
-## Design Principles
+## 🏢 NGO Use Case
 
-- Simplicity over feature bloat
-- Clear validation and feedback
-- Real-time visibility
-- AI as augmentation, not replacement
-- Production-ready structure
+This prototype can be used by:
 
----
+* Community health NGOs
+* Disaster response teams
+* Rural outreach programs
+* Medical volunteer networks
 
-## Future Improvements
-
-- Role-based authentication
-- Admin analytics dashboard
-- Request filtering and search
-- NGO-specific reporting tools
-- Notification system
+It reduces manual triage effort and provides a structured intake system with automation.
 
 ---
 
-CareConnect demonstrates how AI-assisted intake systems can modernize NGO healthcare workflows without introducing unnecessary complexity.
+## 📌 Note
+
+This is a concept-level prototype built for evaluation purposes.
+The goal is clarity, structure, and meaningful AI integration rather than production-scale security or authentication.
+
+---
+
+## 👤 Author
+
+Vaishak V Nair
+B.Tech Computer Science
+AI/ML Enthusiast
+
+---
