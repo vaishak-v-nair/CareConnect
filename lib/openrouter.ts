@@ -1,60 +1,63 @@
 export async function getAISummary(description: string) {
-  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-    },
-    body: JSON.stringify({
-      model: "openai/gpt-3.5-turbo",
-      messages: [
-        {
-          role: "system",
-          content: `
-You are a healthcare triage assistant.
-Return ONLY valid JSON with this exact format:
+  try {
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: "openai/gpt-4o-mini",
+        messages: [
+          {
+            role: "system",
+            content: `
+You are a medical triage assistant.
+Respond ONLY in strict JSON format.
 
+Return:
 {
-  "summary": "short patient summary",
+  "summary": "short medical summary",
   "urgency": "LOW | MEDIUM | HIGH",
-  "category": "GENERAL | EMERGENCY | PEDIATRIC | CARDIAC | OTHER"
+  "category": "GENERAL | RESPIRATORY | CARDIAC | TRAUMA | OTHER"
 }
 
-No explanation. No text. Only JSON.
+No explanations.
+No extra text.
+Only valid JSON.
 `,
-        },
-        {
-          role: "user",
-          content: description,
-        },
-      ],
-      temperature: 0.2,
-    }),
-  });
+          },
+          {
+            role: "user",
+            content: description,
+          },
+        ],
+        temperature: 0.3,
+      }),
+    });
 
-  const data = await response.json();
+    const data = await response.json();
 
-  const raw = data.choices?.[0]?.message?.content;
+    const content =
+      data?.choices?.[0]?.message?.content || "";
 
-  if (!raw) {
-    throw new Error("No AI response");
-  }
-
-  try {
-    const parsed = JSON.parse(raw);
-
+    try {
+      const parsed = JSON.parse(content);
+      return parsed;
+    } catch {
+      console.error("AI JSON parsing failed:", content);
+      return {
+        summary: "AI parsing failed",
+        urgency: "LOW",
+        category: "GENERAL",
+      };
+    }
+  } catch (error) {
+    console.error("OpenRouter error:", error);
     return {
-      summary: parsed.summary || null,
-      urgency: parsed.urgency || null,
-      category: parsed.category || null,
-    };
-  } catch {
-    console.error("AI returned invalid JSON:", raw);
-
-    return {
-      summary: "AI processing completed",
-      urgency: null,
-      category: null,
+      summary: "AI service unavailable",
+      urgency: "LOW",
+      category: "GENERAL",
     };
   }
 }
