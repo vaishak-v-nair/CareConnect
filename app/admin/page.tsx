@@ -1,3 +1,6 @@
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
 import { adminDb } from "@/lib/firebaseAdmin";
 import AdminTabs from "./AdminTabs";
 
