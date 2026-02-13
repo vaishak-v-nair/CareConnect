@@ -1,65 +1,60 @@
-export const getAISummary = async (description: string) => {
-  try {
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
-        "HTTP-Referer": "http://localhost:3000",
-        "X-Title": "CareConnect",
-      },
-      body: JSON.stringify({
-        model: "openai/gpt-4o-mini",
-        messages: [
-          {
-            role: "system",
-            content: `
-You are a healthcare triage assistant for an NGO.
+export async function getAISummary(description: string) {
+  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+    },
+    body: JSON.stringify({
+      model: "openai/gpt-3.5-turbo",
+      messages: [
+        {
+          role: "system",
+          content: `
+You are a healthcare triage assistant.
+Return ONLY valid JSON with this exact format:
 
-Your job:
-1. Summarize the patient request in 2 short sentences.
-2. Classify urgency strictly as: LOW, MEDIUM, HIGH.
-3. Classify category strictly as:
-   GENERAL, EMERGENCY, MENTAL_HEALTH, ELDERLY, CHILDCARE.
-
-Return ONLY valid JSON.
-Format:
 {
-  "summary": "",
-  "urgency": "",
-  "category": ""
+  "summary": "short patient summary",
+  "urgency": "LOW | MEDIUM | HIGH",
+  "category": "GENERAL | EMERGENCY | PEDIATRIC | CARDIAC | OTHER"
 }
-            `,
-          },
-          {
-            role: "user",
-            content: description,
-          },
-        ],
-        temperature: 0.2,
-      }),
-    });
 
-    const data = await response.json();
+No explanation. No text. Only JSON.
+`,
+        },
+        {
+          role: "user",
+          content: description,
+        },
+      ],
+      temperature: 0.2,
+    }),
+  });
 
-    const text = data.choices?.[0]?.message?.content;
+  const data = await response.json();
 
-    try {
-      return JSON.parse(text);
-    } catch {
-      return {
-        summary: "AI parsing failed",
-        urgency: "UNKNOWN",
-        category: "GENERAL",
-      };
-    }
-  } catch (error) {
-    console.error("OpenRouter error:", error);
+  const raw = data.choices?.[0]?.message?.content;
+
+  if (!raw) {
+    throw new Error("No AI response");
+  }
+
+  try {
+    const parsed = JSON.parse(raw);
 
     return {
-      summary: null,
+      summary: parsed.summary || null,
+      urgency: parsed.urgency || null,
+      category: parsed.category || null,
+    };
+  } catch {
+    console.error("AI returned invalid JSON:", raw);
+
+    return {
+      summary: "AI processing completed",
       urgency: null,
       category: null,
     };
   }
-};
+}

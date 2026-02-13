@@ -1,4 +1,4 @@
-import { getApps, initializeApp, cert } from "firebase-admin/app";
+import { initializeApp, cert, getApps } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 
 const serviceAccount = {
@@ -9,7 +9,7 @@ const serviceAccount = {
 
 if (!getApps().length) {
   initializeApp({
-    credential: cert(serviceAccount as any),
+    credential: cert(serviceAccount),
   });
 }
 
