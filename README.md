@@ -192,7 +192,9 @@ The goal is clarity, structure, and meaningful AI integration rather than produc
 ## 👤 Author
 
 Vaishak V Nair
+
 B.Tech Computer Science
+
 AI/ML Enthusiast
 
 ---
