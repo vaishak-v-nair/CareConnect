@@ -9,101 +9,116 @@ export default function AdminTabs({
   patients: any[];
   volunteers: any[];
 }) {
-  const [activeTab, setActiveTab] = useState<"patients" | "volunteers">(
-    "patients"
-  );
+  const [active, setActive] = useState<"patients" | "volunteers">("patients");
+
+  const activeData = active === "patients" ? patients : volunteers;
 
   return (
     <div>
-      {/* Tab Buttons */}
-      <div className="flex gap-4 mb-8">
+      {/* Toggle Buttons */}
+      <div className="flex gap-4 mb-10">
         <button
-          onClick={() => setActiveTab("patients")}
+          onClick={() => setActive("patients")}
           className={`px-6 py-2 rounded-full font-medium transition ${
-            activeTab === "patients"
+            active === "patients"
               ? "bg-blue-600 text-white"
-              : "bg-slate-800 text-gray-300"
+              : "bg-slate-800 text-gray-300 hover:bg-slate-700"
           }`}
         >
           Patients
         </button>
 
         <button
-          onClick={() => setActiveTab("volunteers")}
+          onClick={() => setActive("volunteers")}
           className={`px-6 py-2 rounded-full font-medium transition ${
-            activeTab === "volunteers"
+            active === "volunteers"
               ? "bg-green-600 text-white"
-              : "bg-slate-800 text-gray-300"
+              : "bg-slate-800 text-gray-300 hover:bg-slate-700"
           }`}
         >
           Volunteers
         </button>
       </div>
 
-      {/* Patients */}
-      {activeTab === "patients" &&
-        patients.map((p) => (
-          <div
-            key={p.id}
-            className="bg-slate-900 text-white p-6 rounded-2xl shadow-md mb-6"
-          >
-            <div className="flex justify-between items-center mb-3">
-              <h2 className="text-lg font-semibold">
-                {p.name || "Unknown"} ({p.age || "N/A"})
-              </h2>
+      {/* No Data State */}
+      {activeData.length === 0 && (
+        <div className="bg-slate-900 border border-slate-700 rounded-2xl p-10 text-center">
+          <p className="text-gray-400 text-sm">
+            No {active} found.
+          </p>
+        </div>
+      )}
 
-              <span className="text-xs px-3 py-1 rounded-full bg-gray-700">
-                {p.urgency || "N/A"}
-              </span>
-            </div>
+      {/* Cards */}
+      <div className="grid md:grid-cols-2 gap-8">
+        {active === "patients" &&
+          patients
+            .filter((p) => p.name) // 🔥 prevent dummy object
+            .map((p) => (
+              <div
+                key={p.id}
+                className="bg-slate-900 border border-slate-700 rounded-2xl p-6 shadow-lg"
+              >
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-xl font-semibold text-white">
+                    {p.name} ({p.age})
+                  </h3>
 
-            <p className="text-sm text-gray-400 mb-2">
-              {p.location || "Unknown"} | {p.contact || "N/A"}
-            </p>
+                  <span
+                    className={`px-3 py-1 text-xs rounded-full ${
+                      p.urgency === "HIGH"
+                        ? "bg-red-500/20 text-red-400"
+                        : p.urgency === "MEDIUM"
+                        ? "bg-yellow-500/20 text-yellow-400"
+                        : "bg-green-500/20 text-green-400"
+                    }`}
+                  >
+                    {p.urgency}
+                  </span>
+                </div>
 
-            <p className="mb-2">
-              <strong>Description:</strong>{" "}
-              {p.description || "N/A"}
-            </p>
+                <p className="text-gray-400 text-sm mb-2">
+                  {p.location} | {p.contact}
+                </p>
 
-            <p className="mb-2">
-              <strong>AI Summary:</strong>{" "}
-              {p.ai_summary || "Not processed"}
-            </p>
+                <p className="text-gray-300 mb-2">
+                  <strong>Description:</strong> {p.description}
+                </p>
 
-            <p>
-              <strong>Category:</strong>{" "}
-              {p.category || "N/A"}
-            </p>
-          </div>
-        ))}
+                <p className="text-gray-300 mb-1">
+                  <strong>AI Summary:</strong>{" "}
+                  {p.ai_summary || "Processing..."}
+                </p>
 
-      {/* Volunteers */}
-      {activeTab === "volunteers" &&
-        volunteers.map((v) => (
-          <div
-            key={v.id}
-            className="bg-slate-900 text-white p-6 rounded-2xl shadow-md mb-6"
-          >
-            <h2 className="text-lg font-semibold mb-2">
-              {v.name || "Unknown"}
-            </h2>
+                <p className="text-gray-400 text-sm">
+                  <strong>Category:</strong> {p.category || "N/A"}
+                </p>
+              </div>
+            ))}
 
-            <p className="mb-1">
-              <strong>Skills:</strong>{" "}
-              {v.skills || "N/A"}
-            </p>
+        {active === "volunteers" &&
+          volunteers
+            .filter((v) => v.name) // 🔥 prevent dummy object
+            .map((v) => (
+              <div
+                key={v.id}
+                className="bg-slate-900 border border-slate-700 rounded-2xl p-6 shadow-lg"
+              >
+                <h3 className="text-xl font-semibold text-white mb-3">
+                  {v.name}
+                </h3>
 
-            <p className="mb-1">
-              <strong>Availability:</strong>{" "}
-              {v.availability || "N/A"}
-            </p>
+                <p className="text-gray-300 mb-2">
+                  <strong>Skills:</strong> {v.skills || "N/A"}
+                </p>
 
-            <p className="text-sm text-gray-400">
-              {v.location || "Unknown"} | {v.contact || "N/A"}
-            </p>
-          </div>
-        ))}
+                <p className="text-gray-300">
+                  <strong>Availability:</strong>{" "}
+                  {v.availability || "N/A"}
+                </p>
+              </div>
+            ))}
+      </div>
     </div>
   );
 }
