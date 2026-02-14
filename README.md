@@ -197,6 +197,6 @@ Vaishak V Nair
 
 B.Tech Computer Science
 
-AI/ML Enthusiast
+AI/ML Engineer | Full-Stack Developer | LLM & Generative AI Explorer
 
 ---
